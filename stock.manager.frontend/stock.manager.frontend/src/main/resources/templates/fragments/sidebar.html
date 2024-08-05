@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<link rel="stylesheet" th:href="@{/css/sidebar.css}" type="text/css">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Stock Manager</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+        Products
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                    Products
+                </a>
+                <div class="dropdown-menu">
+                <a class="dropdown-item" th:href="@{/product/list}">All products</a>
+                <a class="dropdown-item" th:href="@{/product/form}">New product</a>
+            </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                    Product acquisition
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" th:href="@{/product-acquisition/list}">All product acquistions</a>
+                    <a class="dropdown-item" th:href="@{/product-acquisition/form}">Register product acquistion</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                    Product consumption request
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" th:href="@{/product-consumption-request/list}">All requests</a>
+                </div>
+            </li>
+
+            <li>
+                <a class="nav-link" th:href="@{/user/logout}">Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    <script th:src="@{/vendor/js/jquery-3.6.0.min.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/sidebar.js}"></script>
+
+</nav>
+
+

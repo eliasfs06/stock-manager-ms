@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/sidebar.html}"></div>
+<div class="container mt-3">
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success">
+        <p th:text="${successMessage}"></p>
+    </div>
+
+    <h4>Product Consumption Acquisition</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Code</th>
+            <th scope="col">Request date</th>
+            <th scope="col">Product</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Description</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${requestList.totalPages != 0}" th:each="request : ${requestList}">
+            <td th:text="${request.id}"></td>
+            <td th:text="${#dates.format(request.requestDate, 'dd/MM/yyyy')}"></td>
+            <td>
+                <div th:text="${request.product.name + ' - ' + request.product.brand + ' - ' + request.product.type}"></div>
+            </td>
+            <td th:text="${request.quantity}"></td>
+            <td th:text="${request.description}"></td>
+            <td th:text="${request.requestStatus.description}"></td>
+            <td class="row">
+                <div class="col-3">
+                    <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')" th:if="${request.requestStatus.name() == 'WAITING'}"
+                       th:href="@{'/product-consumption-request/accept/' + ${request.id}}">Acept</a>
+                    <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')" th:if="${request.requestStatus.name() == 'WAITING'}"
+                       th:href="@{'/product-consumption-request/reject/' + ${request.id}}">Reject</a>
+                </div>
+            </td>
+        </tr>
+        <tr th:if="${requestList.totalPages == 0}">
+            <td colspan="6">No requests registered</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${requestList.totalPages > 0}" class="d-flex pagination" style="justify-content: end;">
+        <a th:each="pageNumber : ${pageNumbers}"
+           th:href="@{/product-consumption-request/list(size=${requestList.size}, page=${pageNumber})}"
+           th:text="${pageNumber}"
+           th:class="${pageNumber == requestList.number + 1} ? 'active' : ''"
+           th:classappend="${pageNumber == currentPage ? 'font-weight-bold' : ''}"
+           style="padding: 5px"></a>
+    </div>
+
+</div>
+
+<script th:src="@{/vendor/js/jquery-3.6.0.min.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+
+</body>
+</html>

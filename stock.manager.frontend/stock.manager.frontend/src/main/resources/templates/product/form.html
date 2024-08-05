@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/sidebar.html}"></div>
+    <div class="container mt-3">
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <h4> New Product Form</h4>
+        <form th:object="${product}" th:action="@{/product/save}" method="post">
+            <input hidden th:field="*{id}">
+            <div class="form-group">
+                <label for="product-name">Name</label>
+                <input th:field="*{name}" type="text" class="form-control" id="product-name">
+            </div>
+            <div class="form-group">
+                <label for="product-name">Type</label>
+                <select class="form-control" th:field="*{productType}">
+                    <option th:each="type : ${types}" th:text="${type.description}" th:value="${type}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="product-name">Brand</label>
+                <select class="form-control" th:field="*{brand}">
+                    <option th:each="brand : ${brands}" th:text="${brand.name}" th:value="${brand}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="product-description">Description</label>
+                <input th:field="*{description}" type="text" class="form-control" id="product-description">
+            </div>
+            <div>
+                <label>Free to consume</label>
+                <div>
+                    <input type="radio" id="free-to-consume-true" name="free-to-consume-radio" th:field="*{freeToConsume}" value="true" checked>
+                    <label for="free-to-consume-true" style="margin-right: 10px; margin-bottom: 20px">Yes</label>
+
+                    <input type="radio" id="free-to-consume-no" name="free-to-consume-radio" th:field="*{freeToConsume}" value="false">
+                    <label for="free-to-consume-no">No</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+        </form>
+    </div>
+
+    <script th:src="@{/vendor/js/jquery-3.6.0.min.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/sidebar.js}"></script>
+</body>
+</html>
