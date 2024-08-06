@@ -17,9 +17,10 @@ const addProduct = () => {
     if (newProductId && newQuantity) {
         itens.push({productId: newProductId, quantity: newQuantity});
     }
+    const currentUrl = window.location.origin;
 
     $.ajax({
-        url: '/product-acquisition/add-item',
+        url: currentUrl + '/stock-manager/product-acquisition/add-item',
         type: 'POST',
         data: JSON.stringify(itens),
         contentType: 'application/json',
@@ -35,13 +36,15 @@ const addProduct = () => {
 const saveProductAcquisition = () => {
     let itens = getItens();
 
+    const currentUrl = window.location.origin;
+
     $.ajax({
-        url: '/product-acquisition/save',
+        url: currentUrl + '/stock-manager/product-acquisition/save',
         type: 'POST',
         data: JSON.stringify(itens),
         contentType: 'application/json',
         success: function () {
-            window.location.href = '/product-acquisition/list';
+            window.location.href = '/stock-manager/product-acquisition/list';
         },
         error: function (xhr, status, error) {
             console.error("Error saving product acquisition:", status, error);

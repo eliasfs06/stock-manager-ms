@@ -34,11 +34,21 @@ public class ProductAcquisitionService {
 
     public Page<ProductAcquisitionDto> getPage(PageRequest pageRequest) {
         String path = gateway + servicePath + "/page";
+
+        int page = pageRequest.getPageNumber();
+        int size = pageRequest.getPageSize();
+
+        StringBuilder urlBuilder = new StringBuilder(path)
+                .append("?page=").append(page)
+                .append("&size=").append(size);
+
+        String url = urlBuilder.toString();
+
         ParameterizedTypeReference<RestPageImpl<ProductAcquisitionDto>> responseType =
                 new ParameterizedTypeReference<RestPageImpl<ProductAcquisitionDto>>() {};
 
         ResponseEntity<RestPageImpl<ProductAcquisitionDto>> responseEntity = restTemplate.exchange(
-                path,
+                url,
                 HttpMethod.GET,
                 null,
                 responseType
@@ -47,8 +57,8 @@ public class ProductAcquisitionService {
         return responseEntity.getBody();
     }
 
-    public void save(List<ProductAcquisitionItemDTO> productAcquisitionItens) {
+    public void save(ProductAcquisitionDto productAcquisition) {
         String path = gateway + servicePath + "/save";
-        restTemplate.postForObject(path, productAcquisitionItens, ProductDto.class);
+        restTemplate.postForObject(path, productAcquisition, ProductAcquisitionDto.class);
     }
 }

@@ -6,7 +6,6 @@ import java.util.List;
 public class ProductAcquisitionItemListResponseDTO {
 
     private List<ProductAcquisitionItemResponseDTO> productAcquisitionItens = new ArrayList<>();
-    private Long userId;
 
     public List<ProductAcquisitionItemResponseDTO> getProductAcquisitionItens() {
         return productAcquisitionItens;
@@ -14,13 +13,5 @@ public class ProductAcquisitionItemListResponseDTO {
 
     public void setProductAcquisitionItens(List<ProductAcquisitionItemResponseDTO> productAcquisitionItens) {
         this.productAcquisitionItens = productAcquisitionItens;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 }

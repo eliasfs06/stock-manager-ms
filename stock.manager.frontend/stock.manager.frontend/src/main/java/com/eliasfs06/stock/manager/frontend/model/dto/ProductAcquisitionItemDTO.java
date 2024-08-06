@@ -1,10 +1,11 @@
 package com.eliasfs06.stock.manager.frontend.model.dto;
 
 public class ProductAcquisitionItemDTO {
-    private String productId;
-    private String quantity;
+    private Integer productId;
+    private Integer quantity;
+    private ProductDto product;
 
-    public ProductAcquisitionItemDTO(String productId, String quantity) {
+    public ProductAcquisitionItemDTO(Integer productId, Integer quantity) {
         this.productId = productId;
         this.quantity = quantity;
     }
@@ -12,19 +13,27 @@ public class ProductAcquisitionItemDTO {
     public ProductAcquisitionItemDTO() {
     }
 
-    public String getProductId() {
+    public Integer getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(Integer productId) {
         this.productId = productId;
     }
 
-    public String getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public ProductDto getProduct() {
+        return product;
+    }
+
+    public void setProduct(ProductDto product) {
+        this.product = product;
     }
 }

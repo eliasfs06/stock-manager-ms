@@ -3,10 +3,7 @@ package com.eliasfs06.product.acquistion.service.service;
 import com.eliasfs06.product.acquistion.service.model.Product;
 import com.eliasfs06.product.acquistion.service.model.ProductAcquisition;
 import com.eliasfs06.product.acquistion.service.model.ProductAcquisitionItem;
-import com.eliasfs06.product.acquistion.service.model.dto.ProductAcquisitionItemDTO;
-import com.eliasfs06.product.acquistion.service.model.dto.ProductAcquisitionItemListDTO;
-import com.eliasfs06.product.acquistion.service.model.dto.ProductAcquisitionItemListResponseDTO;
-import com.eliasfs06.product.acquistion.service.model.dto.ProductAcquisitionItemResponseDTO;
+import com.eliasfs06.product.acquistion.service.model.dto.*;
 import com.eliasfs06.product.acquistion.service.model.exceptionsHandler.BusinessException;
 import com.eliasfs06.product.acquistion.service.repository.ProductAcquisitionRepository;
 import com.eliasfs06.product.acquistion.service.service.helper.MessageCode;
@@ -39,36 +36,38 @@ public class ProductAcquisitionService extends GenericService<ProductAcquisition
     @Autowired
     private RestTemplate restTemplate;
 
-    public Page<ProductAcquisitionItemListResponseDTO> getPageResponse(Pageable pageable) {
+    public Page<ProductAcquisitionDto> getPageResponse(Pageable pageable) {
 
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
-        List<ProductAcquisitionItemListResponseDTO> list;
+        List<ProductAcquisitionItemDTO> listItens = new ArrayList<>();
+        List<ProductAcquisitionDto> list = new ArrayList<>();
         List<ProductAcquisition> productAcquisitions = this.findAll();
-        List<ProductAcquisitionItemListResponseDTO> productAcquisitionResponseList = new ArrayList<>();
 
-        productAcquisitions.forEach(productAcquisition -> {
-            productAcquisition.setItens(productAcquisitionItemService.findByProductAcquisition(productAcquisition.getId()));
-
-            ProductAcquisitionItemListResponseDTO productAcquisitionResponse = new ProductAcquisitionItemListResponseDTO();
-
-            productAcquisition.getItens().forEach(item -> {
-                ProductAcquisitionItemResponseDTO itemDTO = new ProductAcquisitionItemResponseDTO(item.getProduct(), item.getQuantity());
-                productAcquisitionResponse.getProductAcquisitionItens().add(itemDTO);
-            });
-
-            productAcquisitionResponseList.add(productAcquisitionResponse);
-        });
-
-        if (productAcquisitionResponseList.size() < startItem) {
-            list = Collections.emptyList();
-        } else {
-            int toIndex = Math.min(startItem + pageSize, productAcquisitionResponseList.size());
-            list = productAcquisitionResponseList.subList(startItem, toIndex);
+        for(ProductAcquisition productAcquisition : productAcquisitions){
+            List<ProductAcquisitionItem> itens = productAcquisitionItemService.findByProductAcquisition(productAcquisition.getId());
+            for(ProductAcquisitionItem item : itens){
+                ProductAcquisitionItemDTO itemDto = new ProductAcquisitionItemDTO();
+                itemDto.setProductId(Math.toIntExact(item.getProduct().getId()));
+                itemDto.setQuantity(item.getQuantity());
+                itemDto.setProduct(item.getProduct());
+                listItens.add(itemDto);
+            }
+            ProductAcquisitionDto productAcquisitionDto = new ProductAcquisitionDto();
+            productAcquisitionDto.setAquisitionDate(productAcquisition.getAquisitionDate());
+            productAcquisitionDto.setItens(listItens);
+            list.add(productAcquisitionDto);
         }
 
-        return new PageImpl<ProductAcquisitionItemListResponseDTO>(list, PageRequest.of(currentPage, pageSize), productAcquisitionResponseList.size());
+        if (list.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, list.size());
+            list = list.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<ProductAcquisitionDto>(list, PageRequest.of(currentPage, pageSize), list.size());
     }
 
     public List<ProductAcquisition> findAll(){

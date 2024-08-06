@@ -2,6 +2,7 @@ package com.eliasfs06.product.acquistion.service.controller;
 
 import com.eliasfs06.product.acquistion.service.model.Product;
 import com.eliasfs06.product.acquistion.service.model.ProductAcquisition;
+import com.eliasfs06.product.acquistion.service.model.ProductAcquisitionItem;
 import com.eliasfs06.product.acquistion.service.model.dto.*;
 import com.eliasfs06.product.acquistion.service.model.exceptionsHandler.BusinessException;
 import com.eliasfs06.product.acquistion.service.service.ProductAcquisitionService;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,30 +52,35 @@ public class ProductAcquisitionRestController extends GenericRestController<Prod
         int currentPage = page.orElse(DEFAULT_PAGE_NUMBER);
         int pageSize = size.orElse(DEFAULT_PAGE_SIZE);
 
-        Page<ProductAcquisitionItemListResponseDTO> productAcquisitionPage = service.getPageResponse(PageRequest.of(currentPage - 1, pageSize));
+        Page<ProductAcquisitionDto> productAcquisitionPage = service.getPageResponse(PageRequest.of(currentPage - 1, pageSize));
 
         if (productAcquisitionPage.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        int totalPages = productAcquisitionPage.getTotalPages();
-        List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-                .boxed()
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(new PageResponse<>(productAcquisitionPage, currentPage, pageNumbers));
+        return ResponseEntity.ok(productAcquisitionPage);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody List<ProductAcquisitionItemDTO> productAcquisitionItens) {
+    public ResponseEntity<?> save(@RequestBody ProductAcquisitionDto productAcquisitionDto) {
+        ProductAcquisition productAcquisition = new ProductAcquisition();
+        ProductAcquisitionDto productAcquisitionSavedDto = new ProductAcquisitionDto();
         try {
-            ProductAcquisition productAcquisition = service.save(productAcquisitionItens);
-            return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success", productAcquisition), HttpStatus.CREATED);
-
-        } catch (BusinessException e){
-            String errorMessage = messageHelper.getMessage(e.getMessage());
-            return new ResponseEntity<>(new ResponseWrapper<>(errorMessage, "error", null), HttpStatus.BAD_REQUEST);
-
+            productAcquisition = service.save(productAcquisitionDto.getItens());
+        } catch (BusinessException e) {
+            throw new RuntimeException(e);
         }
+        productAcquisitionSavedDto.setId(productAcquisition.getId());
+        List<ProductAcquisitionItemDTO> savedItens = new ArrayList<>();
+        for(ProductAcquisitionItem item : productAcquisition.getItens()){
+            ProductAcquisitionItemDTO dto = new ProductAcquisitionItemDTO();
+            dto.setProduct(item.getProduct());
+            dto.setProductId(Math.toIntExact(item.getProduct().getId()));
+            dto.setQuantity(item.getQuantity());
+            savedItens.add(dto);
+        }
+        productAcquisitionSavedDto.setItens(savedItens);
+        productAcquisitionSavedDto.setAquisitionDate(productAcquisition.getAquisitionDate());
+        return new ResponseEntity<>(new ResponseWrapper<>(messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG), "success", productAcquisitionSavedDto), HttpStatus.CREATED);
     }
 }

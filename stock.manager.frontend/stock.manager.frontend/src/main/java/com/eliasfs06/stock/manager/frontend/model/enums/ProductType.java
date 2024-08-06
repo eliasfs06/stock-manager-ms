@@ -37,7 +37,7 @@ public enum ProductType {
     @JsonCreator
     public static ProductType fromValue(String value) {
         for (ProductType type : ProductType.values()) {
-            if (type.description.equalsIgnoreCase(value)) {
+            if (type.name().equalsIgnoreCase(value)) {
                 return type;
             }
         }

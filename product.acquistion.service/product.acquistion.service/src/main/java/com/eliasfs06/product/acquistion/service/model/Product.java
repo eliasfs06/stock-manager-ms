@@ -2,10 +2,7 @@ package com.eliasfs06.product.acquistion.service.model;
 
 import com.eliasfs06.product.acquistion.service.model.enums.Brand;
 import com.eliasfs06.product.acquistion.service.model.enums.ProductType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Product extends BaseEntity {
@@ -15,9 +12,11 @@ public class Product extends BaseEntity {
 
     private String name;
 
+    @Enumerated(EnumType.STRING)
     private Brand brand;
 
-    private ProductType type;
+    @Enumerated(EnumType.STRING)
+    private ProductType productType;
 
     private String description;
 
@@ -57,12 +56,12 @@ public class Product extends BaseEntity {
         this.brand = brand;
     }
 
-    public ProductType getType() {
-        return type;
+    public ProductType getProductType() {
+        return productType;
     }
 
-    public void setType(ProductType type) {
-        this.type = type;
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
     }
 
     public String getDescription() {

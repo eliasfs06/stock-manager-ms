@@ -61,17 +61,20 @@ public class ProductAcquisitionController {
         int currentPage = page.orElse(DEFAULT_PAGE_NUMBER);
         int pageSize = size.orElse(DEFAULT_PAGE_SIZE);
 
-        Page<ProductAcquisitionDto> productAcquisitionPage = service.getPage(PageRequest.of(currentPage - 1, pageSize));
+        Page<ProductAcquisitionDto> productAcquisitionPage = service.getPage(PageRequest.of(currentPage, pageSize));
 
         model.addAttribute("productAcquisitionList", productAcquisitionPage);
         model.addAttribute("currentPage", currentPage);
 
-        int totalPages = productAcquisitionPage.getTotalPages();
+        int totalPages = 0;
+        if(productAcquisitionPage != null) totalPages = productAcquisitionPage.getTotalPages();
         if (totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
                     .boxed()
                     .collect(Collectors.toList());
             model.addAttribute("pageNumbers", pageNumbers);
+        } else {
+            model.addAttribute("pageNumbers", 0);
         }
 
         return LIST_PATH;
@@ -79,7 +82,11 @@ public class ProductAcquisitionController {
 
     @PostMapping("/save")
     public String save(Model model, ProductAcquisitionDto productAcquisition, @RequestBody List<ProductAcquisitionItemDTO> productAcquisitionItens) {
-        service.save(productAcquisitionItens);
+        productAcquisitionItens.forEach(item -> {
+            item.setProduct(productService.getProduct(Long.valueOf(item.getProductId())));
+        });
+        productAcquisition.setItens(productAcquisitionItens);
+        service.save(productAcquisition);
         model.addAttribute("successMessage", messageHelper.getMessage(MessageCode.DEFAULT_SUCCESS_MSG));
         return findAll(model, Optional.of(DEFAULT_PAGE_NUMBER), Optional.of(DEFAULT_PAGE_SIZE));
     }
@@ -91,7 +98,8 @@ public class ProductAcquisitionController {
         if(productAcquisitionItens != null && !productAcquisitionItens.isEmpty()){
             productAcquisitionItens.forEach(item -> {
                 ProductDto product = productService.getProduct(Long.valueOf(item.getProductId()));
-                ProductAcquisitionItemDTO newItem = new ProductAcquisitionItemDTO(String.valueOf(product.getId()), String.valueOf(item.getQuantity()));
+                ProductAcquisitionItemDTO newItem = new ProductAcquisitionItemDTO(Math.toIntExact(product.getId()), item.getQuantity());
+                newItem.setProduct(product);
                 itens.add(newItem);
             });
         }
